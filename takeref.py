@@ -36,7 +36,7 @@ fileDrop	= args.dropfile
 
 #reference = dict()
 tChroms = [str(x) for x in range(1,23)]
-tChroms.append('X')
+#tChroms.append('X')
 
 for tChrom in tChroms:
 	curRef = dict()
