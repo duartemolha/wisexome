@@ -6,12 +6,12 @@
 ## REQUIREMENTS
 WISExome was developed and tested using Python2.7. Using any other version may cause errors or faulty results.
 
-The list of packages required and tested versions as reported by `pip freeze`:  
-matplotlib==2.0.1  
-numpy==1.13.0  
-pysam==0.10.0  
-scipy==0.19.0  
-xlwt==1.2.0  
+The list of packages required and tested versions as reported by `pip freeze` (versions working as of 2018-06-14):  
+matplotlib==2.0.1 (2.2.2)  
+numpy==1.13.0  (1.14.4)  
+pysam==0.10.0  (0.14.1)  
+scipy==0.19.0  (1.1.0)  
+xlwt==1.2.0  (1.3.0)  
 
 
 
@@ -23,7 +23,15 @@ There are 2 files you need to download from other sources:
 
 > ucscrefseq.bed, a file describing the exact start and stop positions of genes and their exons.  
 
-
+Folders that will be required during this tutorial (create before running):
+> convert  
+leno  
+occout  
+refdata  
+refout  
+refsamples  
+testout  
+testsamples  
 
 ### File conversion
 To convert a .bam file to a file for analysis or training, use the `consam.py` conversion script:
@@ -39,7 +47,7 @@ python lennormalize.py convert captureregions.bed leno
 
 
 ### Reference creation
-All reference files should be fed into the reference creation scripts. Move the (length normalized) reference samples (part of the `leno/samplename.hits`) into a separate folder (say `refsamples`). Create a folder called refdata and start the reference-finding script for every combination of chromosomes:  
+All reference files should be fed into the reference creation scripts. Move the (length normalized) reference samples (part of the `leno/samplename.hits`) into a separate folder (say `refsamples`), move the test samples into another folder (say `testsamples`). Create a folder called refdata and start the reference-finding script for every combination of chromosomes:  
 ```
 mkdir refdata
 for TARGET in `seq 22 -1 1`
@@ -65,7 +73,7 @@ python takeref.py refdata/ refout/refname
 At this point we're just going to act like we're about to test a sample, except we feed the script training samples, use an empty file to fake we have occurrence counts per region and use the `-direct` statement to cut it short:
 ```
 touch emptyfile
-for CHROM in X `seq 22 -1 1`
+for CHROM in `seq 22 -1 1`
 do
   for SAMPLE in `ls refsamples/*.hits`
   do
@@ -96,8 +104,9 @@ done
 
 ## RUNNING TESTS
 To test actual test samples we apply nearly the same script as for the occurrence determination, except now we employ the occurrence files we just created, we feed the script test files, and we may add `-plotfile` to enable plotting results. The `-plotfile` argument is completely optional and can be omitted if speed is preferred.
+Move testsamples to a folder called 
 ```
-for CHROM in X `seq 22 -1 1`
+for CHROM in `seq 22 -1 1`
 do
   for SAMPLE in `ls testsamples/*.hits`
   do
@@ -122,8 +131,9 @@ done
 ### OMIM annotation export to excel
 The data stored after testing (`testout/$NAME.$CHROM` above) can be used to create a nice Excel-sheet, including OMIM information. Several samples can be added in one go, enabling the script to determine any overlap between them. This will result in a sample per sheet, and every sample gets a column to every other sample with information how much (relatively, 0-1) a call overlaps with a call in another sample. This is useful when trios are sequenced.
 > Due to licensing details I currently do not provide an API key for OMIM. You can request one here: https://omim.org/api. Fill your key in between the tickmarks in this line: `apiKey='ENTER YOUR KEY HERE'` near the top of the `excel.py` file.
+Leave the field blank for a report without OMIM data.
 ```
-python excel.py outfile sampleA.npz sampleB.npz sampleC.npz
+python excel.py outfile sampleA sampleB sampleC
 ```
 
 ## TIPS
